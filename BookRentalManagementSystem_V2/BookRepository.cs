@@ -15,6 +15,7 @@ namespace BookRentalManagementSystem_V2
         {
             try
             {
+                CapitalizeTitle(book);
                 using (var connection = new SqlConnection(connectionstring))
                 {
                     connection.Open();
