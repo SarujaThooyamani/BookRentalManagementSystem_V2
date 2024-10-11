@@ -10,12 +10,12 @@ namespace BookRentalManagementSystem_V2
     internal class BookRepository
     {
         public string connectionstring = "Data Source=(localdb)\\MSSQLlocalDB;Initial Catalog=BookRentalManagement;Integrated Security=True";
-        
+
         public void CreateBook(Book book)
         {
             try
             {
-                using(var connection = new SqlConnection(connectionstring))
+                using (var connection = new SqlConnection(connectionstring))
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
@@ -23,7 +23,7 @@ namespace BookRentalManagementSystem_V2
                     INSERT INTO Books(BookId,Title,Author,RentalPrice) VALUES
                     (@BookId,@Title,@Author,@RentalPrice);
                                         ";
-                    command.Parameters.AddWithValue("@BookId",book.Bookid);
+                    command.Parameters.AddWithValue("@BookId", book.Bookid);
                     command.Parameters.AddWithValue("@Title", book.Title);
                     command.Parameters.AddWithValue("@Author", book.Author);
                     command.Parameters.AddWithValue("@RentalPrice", book.RentalPrice);
@@ -46,7 +46,7 @@ namespace BookRentalManagementSystem_V2
 
         public List<Book> GetAllData()
         {
-            var books= new List<Book>();
+            var books = new List<Book>();
             try
             {
                 using (var connection = new SqlConnection(connectionstring))
@@ -86,15 +86,15 @@ namespace BookRentalManagementSystem_V2
         {
             try
             {
-                using(var connection = new SqlConnection(connectionstring))
+                using (var connection = new SqlConnection(connectionstring))
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
                     command.CommandText = @"
                        SELECT FROM Books
                          WHERE BookId=@BookId";
-                    command.Parameters.AddWithValue("@BookId",bookid);
-                    using(var reader = command.ExecuteReader())
+                    command.Parameters.AddWithValue("@BookId", bookid);
+                    using (var reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -123,7 +123,7 @@ namespace BookRentalManagementSystem_V2
         {
             try
             {
-                using(var connection = new SqlConnection(connectionstring))
+                using (var connection = new SqlConnection(connectionstring))
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
@@ -152,18 +152,18 @@ namespace BookRentalManagementSystem_V2
                 Console.WriteLine(ex.Message);
             }
         }
-        public void DeleteBook( string bookId)
+        public void DeleteBook(string bookId)
         {
             try
             {
-                using(var connection = new SqlConnection(connectionstring))
+                using (var connection = new SqlConnection(connectionstring))
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
                     command.CommandText = @"
                        DELETE FROM Books
                          WHERE BookId= @BookId       ";
-                    command.Parameters.AddWithValue("@BookId",bookId);
+                    command.Parameters.AddWithValue("@BookId", bookId);
                     Console.WriteLine("Book Deleted sucssesfully");
                 }
             }
@@ -175,6 +175,25 @@ namespace BookRentalManagementSystem_V2
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+        public string CapitalizeTitle(Book book)
+        {
+            try
+            {
+                var word= book.Title.Split(' ');
+                for(int i=0; i<word.Length; i++)
+                {
+                    word[i] = char.ToUpper(word[i][0]) + word[i].Substring(1).ToLower();
+                }
+                book.Title=String.Join(" ", word);
+                return book.Title;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            return book.Title;
         }
     }
 }
