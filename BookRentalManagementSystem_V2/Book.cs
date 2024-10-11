@@ -24,5 +24,9 @@ namespace BookRentalManagementSystem_V2
         public Book()
         {
         }
+        public override string ToString()
+        {
+            return $"BookId:{Bookid},Title:{Title},Author:{Author},RentalPrice:{RentalPrice}";
+        }
     }
 }
