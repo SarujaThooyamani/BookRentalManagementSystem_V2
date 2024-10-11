@@ -13,5 +13,16 @@ namespace BookRentalManagementSystem_V2
         public string Author{  get; set; }
         public decimal RentalPrice {  get; set; }
 
+        public Book(string bookid, string title, string author, decimal rentalPrice)
+        {
+            Bookid = bookid;
+            Title = title;
+            Author = author;
+            RentalPrice = rentalPrice;
+        }
+
+        public Book()
+        {
+        }
     }
 }

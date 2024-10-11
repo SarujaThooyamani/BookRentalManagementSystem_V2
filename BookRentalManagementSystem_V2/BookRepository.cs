@@ -10,38 +10,170 @@ namespace BookRentalManagementSystem_V2
     internal class BookRepository
     {
         public string connectionstring = "Data Source=(localdb)\\MSSQLlocalDB;Initial Catalog=BookRentalManagement;Integrated Security=True";
-        public void CreateTable()
+        
+        public void CreateBook(Book book)
         {
-            using (var connection = new SqlConnection(connectionstring))
+            try
             {
+                using(var connection = new SqlConnection(connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"
+                    INSERT INTO Books(BookId,Title,Author,RentalPrice) VALUES
+                    (@BookId,@Title,@Author,@RentalPrice);
+                                        ";
+                    command.Parameters.AddWithValue("@BookId",book.Bookid);
+                    command.Parameters.AddWithValue("@Title", book.Title);
+                    command.Parameters.AddWithValue("@Author", book.Author);
+                    command.Parameters.AddWithValue("@RentalPrice", book.RentalPrice);
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Book Successfully added in database");
 
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = @"
-                    IF NOT EXISTS CREATE TABLE Books(
-                     BookId STRING PRIMARY KEY,
-                        Title STRING NOL NULL,
-                        Author STRING NOT NUL,
-                        RentalPrice DECIMAL NOT NULL    );";
-                command.ExecuteNonQuery();
+                }
 
+            }
+            catch (SqlException Sqlex)
+            {
+                Console.WriteLine(Sqlex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        public List<Book> GetAllData()
+        {
+            var books= new List<Book>();
+            try
+            {
+                using (var connection = new SqlConnection(connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"
+                           SELECT * FROM Books ";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var book = new Book(
+                                reader.GetString(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetDecimal(3)
+                                );
+                            books.Add(book);
+                        }
+                    }
+                }
+
+            }
+            catch (SqlException Sqlex)
+            {
+                Console.WriteLine(Sqlex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return books;
+        }
+
+        public void GetsingleData(string bookid)
+        {
+            try
+            {
+                using(var connection = new SqlConnection(connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"
+                       SELECT FROM Books
+                         WHERE BookId=@BookId";
+                    command.Parameters.AddWithValue("@BookId",bookid);
+                    using(var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            var book = new Book(
+                                reader.GetString(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetDecimal(3)
+
+                                );
+                        }
+                    }
+                }
+            }
+            catch (SqlException Sqlex)
+            {
+                Console.WriteLine(Sqlex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
-        public void Insertdata()
+        public void UpdateBook(Book book)
         {
-
-            using (var connection = new SqlConnection(connectionstring))
+            try
             {
+                using(var connection = new SqlConnection(connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"
+                     UPDATE Books 
+                        SET Title=@Title,
+                          Author=@Author,
+                           RentalPrice=@RentalPrice  
+                        WHERE BookId=@ BookId";
+                    command.Parameters.AddWithValue("@BookId", book.Bookid);
+                    command.Parameters.AddWithValue("@Title", book.Title);
+                    command.Parameters.AddWithValue("@Author", book.Author);
+                    command.Parameters.AddWithValue("@RentalPrice", book.RentalPrice);
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("BookUpdated in database successfully");
 
-                connection.Open();
+                }
 
-                var insertcommand = connection.CreateCommand();
-                insertcommand.CommandText = @"
-                INSERT INTO Books(BookId,Title,Author,RentalPrice)  
-                    VALUES('BOOK_001','jeans','Shangar',1.00);
-                            ";
-                insertcommand.ExecuteNonQuery();
+            }
+            catch (SqlException Sqlex)
+            {
+                Console.WriteLine(Sqlex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        public void DeleteBook( string bookId)
+        {
+            try
+            {
+                using(var connection = new SqlConnection(connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"
+                       DELETE FROM Books
+                         WHERE BookId= @BookId       ";
+                    command.Parameters.AddWithValue("@BookId",bookId);
+                    Console.WriteLine("Book Deleted sucssesfully");
+                }
+            }
+            catch (SqlException Sqlex)
+            {
+                Console.WriteLine(Sqlex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }
